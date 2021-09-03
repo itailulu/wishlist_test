@@ -12,19 +12,22 @@
                 <CRow>
                     <CCol sm="6">
                         <CInput
+                        v-model="search"
                         label="Product Title"
                         placeholder="What are you looking for"
                         />
                     </CCol>
                     <CCol sm="2">
                         <CInput
-                        label="Max. Price"
+                        v-model="minPrice"
+                        label="Min. Price"
                         placeholder="123"
                         />
                     </CCol>
                     <CCol sm="2">
                         <CInput
-                        label="Min. Price"
+                        v-model="maxPrice"
+                        label="Max. Price"
                         placeholder="123"
                         />
                     </CCol>
@@ -40,7 +43,6 @@
                 <CRow>
                     <CCol sm=7>
                     <Product></Product>
-
                     </CCol>
                 </CRow>
             </CCol>
@@ -53,34 +55,58 @@
 <script>
 import Product from '../Components/Product.vue'
 export default {
+    name: 'Home',
     components: {
         Product
     },
-    name: 'Home',
+    data() {
+        return {
+            maxPrice: 0,
+            minPrice: 0,
+            search: ''
+        }
+    },
+    mounted(){
+        this.maxPrice = 0
+        this.minPrice = 0
+        this.search = ''
+    },
     methods: {
         submit() {
+            const working_query = `{
+                                        shop {
+                                            products(first:20, query:"variants.price:>=${this.minPrice} variants.price:<=${this.maxPrice} title:*${this.search}*" ){
+                                                edges{
+                                                    node{
+                                                        id
+                                                        images(first: 1) {
+                                                            edges {
+                                                                node {
+                                                                    id
+                                                                    originalSrc
+                                                                }
+                                                            }
+                                                        }
+                                                        title
+                                                        priceRange{
+                                                            maxVariantPrice{
+                                                                currencyCode
+                                                                amount
+                                                            }
+                                                            minVariantPrice{
+                                                                currencyCode
+                                                                amount
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }`
 
             axios.post(
                 'https://dev-pengiun.myshopify.com/api/2021-07/graphql.json',
-                `query {
-                    products(first:10, query: "title=shirt") {
-                        edges {
-                            node {
-                                variants(first: 10) {
-                                edges {
-                                    node {
-                                    id
-                                    product{
-                                        description
-                                        title
-                                    }
-                                    }
-                                }
-                                }
-                            }
-                        }
-                    }
-                }`,
+                working_query,
                 {
                     headers: {
                         "Content-Type": "application/graphql",

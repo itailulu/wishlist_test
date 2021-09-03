@@ -20988,15 +20988,30 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'Home',
   components: {
     Product: _Components_Product_vue__WEBPACK_IMPORTED_MODULE_0__.default
   },
-  name: 'Home',
+  data: function data() {
+    return {
+      maxPrice: 0,
+      minPrice: 0,
+      search: ''
+    };
+  },
+  mounted: function mounted() {
+    this.maxPrice = 0;
+    this.minPrice = 0;
+    this.search = '';
+  },
   methods: {
     submit: function submit() {
-      axios.post('https://dev-pengiun.myshopify.com/api/2021-07/graphql.json', "query {\n                    products(first:10, query: \"title=shirt\") {\n                        edges {\n                            node {\n                                variants(first: 10) {\n                                edges {\n                                    node {\n                                    id\n                                    product{\n                                        description\n                                        title\n                                    }\n                                    }\n                                }\n                                }\n                            }\n                        }\n                    }\n                }", {
+      var working_query = "{\n                                        shop {\n                                            products(first:20, query:\"variants.price:>=".concat(this.minPrice, " variants.price:<=").concat(this.maxPrice, " title:*").concat(this.search, "*\" ){\n                                                edges{\n                                                    node{\n                                                        id\n                                                        images(first: 1) {\n                                                            edges {\n                                                                node {\n                                                                    id\n                                                                    originalSrc\n                                                                }\n                                                            }\n                                                        }\n                                                        title\n                                                        priceRange{\n                                                            maxVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                            minVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                        }\n                                                    }\n                                                }\n                                            }\n                                        }\n                                    }");
+      axios.post('https://dev-pengiun.myshopify.com/api/2021-07/graphql.json', working_query, {
         headers: {
           "Content-Type": "application/graphql",
           "X-Shopify-Storefront-Access-Token": '1635d6ab631c8d467d7dba18d106bca1'
@@ -38797,6 +38812,13 @@ var render = function() {
                         attrs: {
                           label: "Product Title",
                           placeholder: "What are you looking for"
+                        },
+                        model: {
+                          value: _vm.search,
+                          callback: function($$v) {
+                            _vm.search = $$v
+                          },
+                          expression: "search"
                         }
                       })
                     ],
@@ -38808,7 +38830,14 @@ var render = function() {
                     { attrs: { sm: "2" } },
                     [
                       _c("CInput", {
-                        attrs: { label: "Max. Price", placeholder: "123" }
+                        attrs: { label: "Min. Price", placeholder: "123" },
+                        model: {
+                          value: _vm.minPrice,
+                          callback: function($$v) {
+                            _vm.minPrice = $$v
+                          },
+                          expression: "minPrice"
+                        }
                       })
                     ],
                     1
@@ -38819,7 +38848,14 @@ var render = function() {
                     { attrs: { sm: "2" } },
                     [
                       _c("CInput", {
-                        attrs: { label: "Min. Price", placeholder: "123" }
+                        attrs: { label: "Max. Price", placeholder: "123" },
+                        model: {
+                          value: _vm.maxPrice,
+                          callback: function($$v) {
+                            _vm.maxPrice = $$v
+                          },
+                          expression: "maxPrice"
+                        }
                       })
                     ],
                     1
