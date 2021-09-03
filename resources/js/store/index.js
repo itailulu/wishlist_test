@@ -5,15 +5,18 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        searchResult: [
-            {},
-            {},
-            {}
-        ]
+        wishList: [],
+        products: []
     },
     mutations: {
+        updateWishlist(){
+            
+        }
     },
     actions: {
+        getProducts(){
+
+        }
     },
     modules: {
     }

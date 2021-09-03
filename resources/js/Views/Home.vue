@@ -32,7 +32,12 @@
                         />
                     </CCol>
                     <CCol sm=2 class="mt-4">
-                        <button class="btn btn-outline-primary" @click=submit()>Search</button>
+                        <CButton
+                            color="primary"
+                            variant="outline"
+                            class="m-2"
+                            @click="submit()"
+                        >Search</CButton>
                     </CCol>
                 </CRow>
             </CCol>
@@ -42,7 +47,7 @@
             <CCol sm="6">
                 <CRow>
                     <CCol sm=7>
-                    <Product></Product>
+                    <Product v-for="product in products" :key="product.node.id" :product="product"></Product>
                     </CCol>
                 </CRow>
             </CCol>
@@ -63,19 +68,24 @@ export default {
         return {
             maxPrice: 0,
             minPrice: 0,
-            search: ''
+            search: '',
+            products: [],
         }
     },
     mounted(){
         this.maxPrice = 0
         this.minPrice = 0
         this.search = ''
+        this.submit();
     },
     methods: {
         submit() {
+            let filters = this.getFilters();
+            console.log("filters:", filters);
+
             const working_query = `{
                                         shop {
-                                            products(first:20, query:"variants.price:>=${this.minPrice} variants.price:<=${this.maxPrice} title:*${this.search}*" ){
+                                            products(first:20, query:"${filters}" ){
                                                 edges{
                                                     node{
                                                         id
@@ -113,8 +123,17 @@ export default {
                         "X-Shopify-Storefront-Access-Token": '1635d6ab631c8d467d7dba18d106bca1'
                     }
                 }
-            ).then(response => console.log(response))
+            ).then(response => {
+                this.products = response.data.data.shop.products.edges
+                console.log(this.products)
+            })
             .catch(err => console.log(err.response))
+        },
+        getFilters(){
+            let minPriceFilter = this.minPrice ? `variants.price:>=${this.minPrice}` : ''
+            let maxPriceFilter = this.maxPrice ? `variants.price:<=${this.maxPrice}` : ''
+            let titleFilter = this.search ? `title:*${this.search}*` : ''
+            return `${minPriceFilter} ${maxPriceFilter} ${titleFilter}`
         }
     }
 }

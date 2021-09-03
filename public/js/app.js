@@ -20911,14 +20911,35 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: ["product"],
   data: function data() {
     return {
       title: "",
       image: "",
-      min_price: 0,
-      max_price: 0
+      minPrice: 0,
+      maxPrice: 0,
+      id: ''
     };
+  },
+  mounted: function mounted() {
+    this.title = this.product.node.title;
+    this.image = this.product.node.images.edges[0] ? this.product.node.images.edges[0].node.originalSrc : "";
+    this.minPrice = this.product.node.priceRange.minVariantPrice.amount;
+    this.maxPrice = this.product.node.priceRange.maxVariantPrice.amount;
+    this.id = this.product.node.id;
+  },
+  methods: {
+    saveToWishlist: function saveToWishlist() {
+      console.log("saved");
+    }
   }
 });
 
@@ -20990,6 +21011,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Home',
@@ -21000,27 +21026,40 @@ __webpack_require__.r(__webpack_exports__);
     return {
       maxPrice: 0,
       minPrice: 0,
-      search: ''
+      search: '',
+      products: []
     };
   },
   mounted: function mounted() {
     this.maxPrice = 0;
     this.minPrice = 0;
     this.search = '';
+    this.submit();
   },
   methods: {
     submit: function submit() {
-      var working_query = "{\n                                        shop {\n                                            products(first:20, query:\"variants.price:>=".concat(this.minPrice, " variants.price:<=").concat(this.maxPrice, " title:*").concat(this.search, "*\" ){\n                                                edges{\n                                                    node{\n                                                        id\n                                                        images(first: 1) {\n                                                            edges {\n                                                                node {\n                                                                    id\n                                                                    originalSrc\n                                                                }\n                                                            }\n                                                        }\n                                                        title\n                                                        priceRange{\n                                                            maxVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                            minVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                        }\n                                                    }\n                                                }\n                                            }\n                                        }\n                                    }");
+      var _this = this;
+
+      var filters = this.getFilters();
+      console.log("filters:", filters);
+      var working_query = "{\n                                        shop {\n                                            products(first:20, query:\"".concat(filters, "\" ){\n                                                edges{\n                                                    node{\n                                                        id\n                                                        images(first: 1) {\n                                                            edges {\n                                                                node {\n                                                                    id\n                                                                    originalSrc\n                                                                }\n                                                            }\n                                                        }\n                                                        title\n                                                        priceRange{\n                                                            maxVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                            minVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                        }\n                                                    }\n                                                }\n                                            }\n                                        }\n                                    }");
       axios.post('https://dev-pengiun.myshopify.com/api/2021-07/graphql.json', working_query, {
         headers: {
           "Content-Type": "application/graphql",
           "X-Shopify-Storefront-Access-Token": '1635d6ab631c8d467d7dba18d106bca1'
         }
       }).then(function (response) {
-        return console.log(response);
+        _this.products = response.data.data.shop.products.edges;
+        console.log(_this.products);
       })["catch"](function (err) {
         return console.log(err.response);
       });
+    },
+    getFilters: function getFilters() {
+      var minPriceFilter = this.minPrice ? "variants.price:>=".concat(this.minPrice) : '';
+      var maxPriceFilter = this.maxPrice ? "variants.price:<=".concat(this.maxPrice) : '';
+      var titleFilter = this.search ? "title:*".concat(this.search, "*") : '';
+      return "".concat(minPriceFilter, " ").concat(maxPriceFilter, " ").concat(titleFilter);
     }
   }
 });
@@ -21143,10 +21182,15 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0__.default.use(vuex__WEBPACK_IMPORTED_MODULE_1__.default);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_1__.default.Store({
   state: {
-    searchResult: [{}, {}, {}]
+    wishList: [],
+    products: []
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    updateWishlist: function updateWishlist() {}
+  },
+  actions: {
+    getProducts: function getProducts() {}
+  },
   modules: {}
 }));
 
@@ -38734,17 +38778,48 @@ var render = function() {
   return _c(
     "CRow",
     [
-      _c("CCol", { attrs: { sm: "6" } }, [_vm._v("\r\n        image\r\n    ")]),
+      _c(
+        "CCol",
+        { attrs: { sm: "6" } },
+        [
+          _c("CImg", {
+            staticClass: "mb-2",
+            attrs: { src: _vm.image, thumbnail: "", block: "" }
+          })
+        ],
+        1
+      ),
       _vm._v(" "),
-      _c("CCol", { attrs: { sm: "6" } }, [
-        _c("p", [_c("strong", [_vm._v(_vm._s(_vm.title))])]),
-        _vm._v(" "),
-        _c("p", [
-          _vm._v("$" + _vm._s(_vm.min_price) + " - $" + _vm._s(_vm.max_price))
-        ]),
-        _vm._v(" "),
-        _c("p", [_vm._v("Save for Later")])
-      ])
+      _c(
+        "CCol",
+        { attrs: { sm: "6" } },
+        [
+          _c("strong", [_vm._v(_vm._s(_vm.title))]),
+          _vm._v(" "),
+          _c("br"),
+          _vm._v(
+            "\r\n        $" +
+              _vm._s(_vm.minPrice) +
+              " - $" +
+              _vm._s(_vm.maxPrice) +
+              "\r\n        "
+          ),
+          _c("br"),
+          _vm._v(" "),
+          _c(
+            "CLink",
+            {
+              on: {
+                click: function($event) {
+                  return _vm.saveToWishlist()
+                }
+              }
+            },
+            [_vm._v("Save To Wishlist")]
+          )
+        ],
+        1
+      )
     ],
     1
   )
@@ -38861,20 +38936,26 @@ var render = function() {
                     1
                   ),
                   _vm._v(" "),
-                  _c("CCol", { staticClass: "mt-4", attrs: { sm: "2" } }, [
-                    _c(
-                      "button",
-                      {
-                        staticClass: "btn btn-outline-primary",
-                        on: {
-                          click: function($event) {
-                            return _vm.submit()
+                  _c(
+                    "CCol",
+                    { staticClass: "mt-4", attrs: { sm: "2" } },
+                    [
+                      _c(
+                        "CButton",
+                        {
+                          staticClass: "m-2",
+                          attrs: { color: "primary", variant: "outline" },
+                          on: {
+                            click: function($event) {
+                              return _vm.submit()
+                            }
                           }
-                        }
-                      },
-                      [_vm._v("Search")]
-                    )
-                  ])
+                        },
+                        [_vm._v("Search")]
+                      )
+                    ],
+                    1
+                  )
                 ],
                 1
               )
@@ -38896,7 +38977,19 @@ var render = function() {
             [
               _c(
                 "CRow",
-                [_c("CCol", { attrs: { sm: "7" } }, [_c("Product")], 1)],
+                [
+                  _c(
+                    "CCol",
+                    { attrs: { sm: "7" } },
+                    _vm._l(_vm.products, function(product) {
+                      return _c("Product", {
+                        key: product.node.id,
+                        attrs: { product: product }
+                      })
+                    }),
+                    1
+                  )
+                ],
                 1
               )
             ],

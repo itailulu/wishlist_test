@@ -1,24 +1,47 @@
 <template>
 <CRow>
     <CCol sm=6>
-        image
+        <CImg
+            :src="image"
+            thumbnail
+            class="mb-2"
+            block
+        />
     </CCol>
     <CCol sm=6>
-        <p><strong>{{title}}</strong></p>
-        <p>${{min_price}} - ${{max_price}}</p>
-        <p>Save for Later</p>
+        <strong>{{title}}</strong>
+        <br>
+        ${{minPrice}} - ${{maxPrice}}
+        <br>
+        <CLink @click="saveToWishlist()">Save To Wishlist</CLink>
     </CCol>
 </CRow>
     
 </template>
 <script>
 export default {
+    props: ["product"],
     data() {
         return {
             title: "",
             image: "",
-            min_price: 0,
-            max_price: 0,
+            minPrice: 0,
+            maxPrice: 0,
+            id: ''
+        }
+    },
+
+    mounted() {
+        this.title = this.product.node.title
+        this.image = this.product.node.images.edges[0] ? this.product.node.images.edges[0].node.originalSrc : ""
+        this.minPrice = this.product.node.priceRange.minVariantPrice.amount
+        this.maxPrice = this.product.node.priceRange.maxVariantPrice.amount
+        this.id = this.product.node.id
+    },
+
+    methods: {
+        saveToWishlist(){
+            console.log("saved");
         }
     }
 }
