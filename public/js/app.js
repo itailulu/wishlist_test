@@ -21077,7 +21077,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$store.dispatch("getProducts", filters);
     },
     sendEmail: function sendEmail() {
-      console.log(location + "confirm");
+      axios.post("/wishlists", {
+        wishlist: this.$store.state.wishlist,
+        email: "email@example.com"
+      }).then(function (response) {
+        return console.log(response);
+      })["catch"](function (error) {
+        return console.log(error.response);
+      });
     },
     getFilters: function getFilters() {
       var minPriceFilter = this.minPrice ? "variants.price:>=".concat(this.minPrice) : '';
