@@ -20937,8 +20937,8 @@ __webpack_require__.r(__webpack_exports__);
     this.id = this.product.node.id;
   },
   methods: {
-    saveToWishlist: function saveToWishlist() {
-      console.log("saved");
+    saveToWishlist: function saveToWishlist(product) {
+      this.$store.commit("addProductToWishlist", product);
     }
   }
 });
@@ -20957,6 +20957,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _Components_Product_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Components/Product.vue */ "./resources/js/Components/Product.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -21016,6 +21023,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Home',
@@ -21026,8 +21038,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       maxPrice: 0,
       minPrice: 0,
-      search: '',
-      products: []
+      search: ''
     };
   },
   mounted: function mounted() {
@@ -21036,24 +21047,12 @@ __webpack_require__.r(__webpack_exports__);
     this.search = '';
     this.submit();
   },
+  computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapState)(['products', 'wishlist'])),
   methods: {
     submit: function submit() {
-      var _this = this;
-
       var filters = this.getFilters();
       console.log("filters:", filters);
-      var working_query = "{\n                                        shop {\n                                            products(first:20, query:\"".concat(filters, "\" ){\n                                                edges{\n                                                    node{\n                                                        id\n                                                        images(first: 1) {\n                                                            edges {\n                                                                node {\n                                                                    id\n                                                                    originalSrc\n                                                                }\n                                                            }\n                                                        }\n                                                        title\n                                                        priceRange{\n                                                            maxVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                            minVariantPrice{\n                                                                currencyCode\n                                                                amount\n                                                            }\n                                                        }\n                                                    }\n                                                }\n                                            }\n                                        }\n                                    }");
-      axios.post('https://dev-pengiun.myshopify.com/api/2021-07/graphql.json', working_query, {
-        headers: {
-          "Content-Type": "application/graphql",
-          "X-Shopify-Storefront-Access-Token": '1635d6ab631c8d467d7dba18d106bca1'
-        }
-      }).then(function (response) {
-        _this.products = response.data.data.shop.products.edges;
-        console.log(_this.products);
-      })["catch"](function (err) {
-        return console.log(err.response);
-      });
+      this.$store.dispatch("getProducts", filters);
     },
     getFilters: function getFilters() {
       var minPriceFilter = this.minPrice ? "variants.price:>=".concat(this.minPrice) : '';
@@ -21182,17 +21181,51 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0__.default.use(vuex__WEBPACK_IMPORTED_MODULE_1__.default);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vuex__WEBPACK_IMPORTED_MODULE_1__.default.Store({
   state: {
-    wishList: [],
+    wishlist: [],
     products: []
   },
+  getters: {},
   mutations: {
-    updateWishlist: function updateWishlist() {}
+    setProducts: function setProducts(state, products) {
+      state.products = products;
+    },
+    addProductToWishlist: function addProductToWishlist(state, product) {
+      var already_exists = false;
+      state.wishlist.forEach(function (element) {
+        if (element.node.id == product.node.id) {
+          already_exists = true;
+        }
+      });
+      console.log(already_exists);
+
+      if (!already_exists) {
+        state.wishlist.push(product);
+      }
+    }
   },
   actions: {
-    getProducts: function getProducts() {}
-  },
-  modules: {}
+    getProducts: function getProducts(context, filters) {
+      var url = 'https://dev-pengiun.myshopify.com/api/2021-07/graphql.json';
+      var query = getQuery(filters);
+      var options = {
+        headers: {
+          "Content-Type": "application/graphql",
+          "X-Shopify-Storefront-Access-Token": '1635d6ab631c8d467d7dba18d106bca1'
+        }
+      };
+      axios.post(url, query, options).then(function (response) {
+        var products = response.data.data.shop.products.edges;
+        context.commit("setProducts", products);
+      })["catch"](function (err) {
+        return console.log(err.response);
+      });
+    }
+  }
 }));
+
+function getQuery(filters) {
+  return "{\n        shop {\n            products(first:20, query:\"".concat(filters, "\" ){\n                edges{\n                    node{\n                        id\n                        images(first: 1) {\n                            edges {\n                                node {\n                                    id\n                                    originalSrc\n                                }\n                            }\n                        }\n                        title\n                        priceRange{\n                            maxVariantPrice{\n                                currencyCode\n                                amount\n                            }\n                            minVariantPrice{\n                                currencyCode\n                                amount\n                            }\n                        }\n                    }\n                }\n            }\n        }\n    }");
+}
 
 /***/ }),
 
@@ -38811,7 +38844,7 @@ var render = function() {
             {
               on: {
                 click: function($event) {
-                  return _vm.saveToWishlist()
+                  return _vm.saveToWishlist(_vm.product)
                 }
               }
             },
@@ -38996,9 +39029,30 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c("CCol", { attrs: { sm: "6" } }, [
-            _vm._v("\n        place for wishlist \n    ")
-          ])
+          _c(
+            "CCol",
+            { attrs: { sm: "6" } },
+            [
+              _c(
+                "CRow",
+                [
+                  _c(
+                    "CCol",
+                    { attrs: { sm: "7" } },
+                    _vm._l(_vm.wishlist, function(product) {
+                      return _c("Product", {
+                        key: product.node.id,
+                        attrs: { product: product }
+                      })
+                    }),
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
         ],
         1
       )

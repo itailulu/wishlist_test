@@ -52,13 +52,18 @@
                 </CRow>
             </CCol>
             <CCol sm="6">
-                place for wishlist 
+                <CRow>
+                    <CCol sm=7>
+                    <Product v-for="product in wishlist" :key="product.node.id" :product="product"></Product>
+                    </CCol>
+                </CRow>
             </CCol>
         </CRow>
         </div>
 </template>
 <script>
 import Product from '../Components/Product.vue'
+import { mapState } from 'vuex'
 export default {
     name: 'Home',
     components: {
@@ -69,65 +74,22 @@ export default {
             maxPrice: 0,
             minPrice: 0,
             search: '',
-            products: [],
         }
     },
     mounted(){
         this.maxPrice = 0
         this.minPrice = 0
         this.search = ''
-        this.submit();
+        this.submit()
+    },
+    computed: {
+    ...mapState(['products', 'wishlist'])
     },
     methods: {
         submit() {
             let filters = this.getFilters();
             console.log("filters:", filters);
-
-            const working_query = `{
-                                        shop {
-                                            products(first:20, query:"${filters}" ){
-                                                edges{
-                                                    node{
-                                                        id
-                                                        images(first: 1) {
-                                                            edges {
-                                                                node {
-                                                                    id
-                                                                    originalSrc
-                                                                }
-                                                            }
-                                                        }
-                                                        title
-                                                        priceRange{
-                                                            maxVariantPrice{
-                                                                currencyCode
-                                                                amount
-                                                            }
-                                                            minVariantPrice{
-                                                                currencyCode
-                                                                amount
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }`
-
-            axios.post(
-                'https://dev-pengiun.myshopify.com/api/2021-07/graphql.json',
-                working_query,
-                {
-                    headers: {
-                        "Content-Type": "application/graphql",
-                        "X-Shopify-Storefront-Access-Token": '1635d6ab631c8d467d7dba18d106bca1'
-                    }
-                }
-            ).then(response => {
-                this.products = response.data.data.shop.products.edges
-                console.log(this.products)
-            })
-            .catch(err => console.log(err.response))
+            this.$store.dispatch("getProducts", filters)
         },
         getFilters(){
             let minPriceFilter = this.minPrice ? `variants.price:>=${this.minPrice}` : ''

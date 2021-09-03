@@ -13,7 +13,7 @@
         <br>
         ${{minPrice}} - ${{maxPrice}}
         <br>
-        <CLink @click="saveToWishlist()">Save To Wishlist</CLink>
+        <CLink @click="saveToWishlist(product)">Save To Wishlist</CLink>
     </CCol>
 </CRow>
     
@@ -40,8 +40,8 @@ export default {
     },
 
     methods: {
-        saveToWishlist(){
-            console.log("saved");
+        saveToWishlist(product){
+            this.$store.commit("addProductToWishlist", product)
         }
     }
 }
