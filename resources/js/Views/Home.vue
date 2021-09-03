@@ -47,14 +47,27 @@
             <CCol sm="6">
                 <CRow>
                     <CCol sm=7>
-                    <Product v-for="product in products" :key="product.node.id" :product="product"></Product>
+                        <Product v-for="product in products" :key="product.node.id" :product="product"></Product>
                     </CCol>
                 </CRow>
             </CCol>
             <CCol sm="6">
                 <CRow>
+                    <CCol sm="6" class="mb-0">
+                        <h4>Your wishlist:</h4>
+                    </CCol>
+                    <CCol sm="6">
+                        <CButton
+                            color="primary"
+                            variant="outline"
+                            class="m-2"
+                            @click="sendEmail()"
+                        >Send Wishlist to a friend</CButton>
+                    </CCol>
+                </CRow>
+                <CRow>
                     <CCol sm=7>
-                    <Product v-for="product in wishlist" :key="product.node.id" :product="product"></Product>
+                        <Product v-for="product in wishlist" :key="product.node.id" :product="product"></Product>
                     </CCol>
                 </CRow>
             </CCol>
@@ -90,6 +103,9 @@ export default {
             let filters = this.getFilters();
             console.log("filters:", filters);
             this.$store.dispatch("getProducts", filters)
+        },
+        sendEmail(){
+            console.log(location + "confirm");
         },
         getFilters(){
             let minPriceFilter = this.minPrice ? `variants.price:>=${this.minPrice}` : ''

@@ -20918,6 +20918,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ["product"],
   data: function data() {
@@ -20926,7 +20928,8 @@ __webpack_require__.r(__webpack_exports__);
       image: "",
       minPrice: 0,
       maxPrice: 0,
-      id: ''
+      id: '',
+      inWishlist: false
     };
   },
   mounted: function mounted() {
@@ -20935,10 +20938,16 @@ __webpack_require__.r(__webpack_exports__);
     this.minPrice = this.product.node.priceRange.minVariantPrice.amount;
     this.maxPrice = this.product.node.priceRange.maxVariantPrice.amount;
     this.id = this.product.node.id;
+    this.inWishlist = this.product.inWishlist != undefined ? true : false;
   },
   methods: {
     saveToWishlist: function saveToWishlist(product) {
       this.$store.commit("addProductToWishlist", product);
+      product.inWishlist = true;
+    },
+    removeFromWishlist: function removeFromWishlist(product) {
+      this.$store.commit("removeProductFromWishlist", product);
+      product.inWishlist = false;
     }
   }
 });
@@ -20964,6 +20973,19 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -21053,6 +21075,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var filters = this.getFilters();
       console.log("filters:", filters);
       this.$store.dispatch("getProducts", filters);
+    },
+    sendEmail: function sendEmail() {
+      console.log(location + "confirm");
     },
     getFilters: function getFilters() {
       var minPriceFilter = this.minPrice ? "variants.price:>=".concat(this.minPrice) : '';
@@ -21199,7 +21224,16 @@ vue__WEBPACK_IMPORTED_MODULE_0__.default.use(vuex__WEBPACK_IMPORTED_MODULE_1__.d
       console.log(already_exists);
 
       if (!already_exists) {
-        state.wishlist.push(product);
+        product.inWishlist = true;
+        state.wishlist.push(Object.assign({}, product));
+      }
+    },
+    removeProductFromWishlist: function removeProductFromWishlist(state, product) {
+      var index = state.wishlist.indexOf(product);
+      console.log("INDEX", index);
+
+      if (index !== -1) {
+        state.wishlist.splice(index, 1);
       }
     }
   },
@@ -38839,17 +38873,29 @@ var render = function() {
           ),
           _c("br"),
           _vm._v(" "),
-          _c(
-            "CLink",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.saveToWishlist(_vm.product)
-                }
-              }
-            },
-            [_vm._v("Save To Wishlist")]
-          )
+          !_vm.inWishlist
+            ? _c(
+                "CLink",
+                {
+                  on: {
+                    click: function($event) {
+                      return _vm.saveToWishlist(_vm.product)
+                    }
+                  }
+                },
+                [_vm._v("Save To Wishlist")]
+              )
+            : _c(
+                "CLink",
+                {
+                  on: {
+                    click: function($event) {
+                      return _vm.removeFromWishlist(_vm.product)
+                    }
+                  }
+                },
+                [_vm._v("Remove")]
+              )
         ],
         1
       )
@@ -39033,6 +39079,37 @@ var render = function() {
             "CCol",
             { attrs: { sm: "6" } },
             [
+              _c(
+                "CRow",
+                [
+                  _c("CCol", { staticClass: "mb-0", attrs: { sm: "6" } }, [
+                    _c("h4", [_vm._v("Your wishlist:")])
+                  ]),
+                  _vm._v(" "),
+                  _c(
+                    "CCol",
+                    { attrs: { sm: "6" } },
+                    [
+                      _c(
+                        "CButton",
+                        {
+                          staticClass: "m-2",
+                          attrs: { color: "primary", variant: "outline" },
+                          on: {
+                            click: function($event) {
+                              return _vm.sendEmail()
+                            }
+                          }
+                        },
+                        [_vm._v("Send Wishlist to a friend")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
               _c(
                 "CRow",
                 [

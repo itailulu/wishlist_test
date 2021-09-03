@@ -25,7 +25,16 @@ export default new Vuex.Store({
             });
             console.log(already_exists);
             if(!already_exists){
-                state.wishlist.push(product);
+                product.inWishlist = true;
+                state.wishlist.push(Object.assign({},product))
+            }
+        },
+
+        removeProductFromWishlist: function (state, product){
+            const index = state.wishlist.indexOf(product);
+            console.log("INDEX", index);
+            if(index !== -1){
+                state.wishlist.splice(index,1)
             }
         }
     },

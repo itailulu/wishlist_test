@@ -13,7 +13,9 @@
         <br>
         ${{minPrice}} - ${{maxPrice}}
         <br>
-        <CLink @click="saveToWishlist(product)">Save To Wishlist</CLink>
+        <CLink v-if="!inWishlist" @click="saveToWishlist(product)">Save To Wishlist</CLink>
+        <CLink v-else @click="removeFromWishlist(product)">Remove</CLink>
+        
     </CCol>
 </CRow>
     
@@ -27,7 +29,8 @@ export default {
             image: "",
             minPrice: 0,
             maxPrice: 0,
-            id: ''
+            id: '',
+            inWishlist: false,
         }
     },
 
@@ -37,11 +40,17 @@ export default {
         this.minPrice = this.product.node.priceRange.minVariantPrice.amount
         this.maxPrice = this.product.node.priceRange.maxVariantPrice.amount
         this.id = this.product.node.id
+        this.inWishlist = this.product.inWishlist != undefined ? true:false
     },
 
     methods: {
         saveToWishlist(product){
             this.$store.commit("addProductToWishlist", product)
+            product.inWishlist = true;
+        },
+        removeFromWishlist(product){
+            this.$store.commit("removeProductFromWishlist", product)
+            product.inWishlist=false;
         }
     }
 }
