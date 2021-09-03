@@ -105,9 +105,10 @@ export default {
             this.$store.dispatch("getProducts", filters)
         },
         sendEmail(){
-            axios.post("/wishlists", {wishlist: this.$store.state.wishlist, email: "email@example.com"})
-                .then(response => console.log(response))
-                .catch(error => console.log(error.response))
+            this.$router.push("/email")
+            // axios.post("/wishlists", {wishlist: this.$store.state.wishlist, email: "email@example.com"})
+            //     .then(response => console.log(response))
+            //     .catch(error => console.log(error.response))
         },
         getFilters(){
             let minPriceFilter = this.minPrice ? `variants.price:>=${this.minPrice}` : ''

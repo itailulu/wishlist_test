@@ -6,12 +6,16 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         wishlist: [],
-        products: []
+        products: [],
+        email: ''
     },
     getters: {
 
     },
     mutations: {
+        email: function (state, email){
+            state.email = email;
+        },
         setProducts: function (state, products){
             state.products = products;
         },

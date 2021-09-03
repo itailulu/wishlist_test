@@ -14,8 +14,8 @@
         
     </head>
     <body class="antialiased">
-        <div id="app">
-            <Home></Home>
+        <div id="app" class="container h-800">
+            <router-view></router-view>
         </div>
     </body>
 
