@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import router from '../router'
 
 Vue.use(Vuex)
 
@@ -60,7 +61,22 @@ export default new Vuex.Store({
             context.commit("setProducts", products);
         })
         .catch(err => console.log(err.response))
-       } 
+       },
+       
+       submitWishlist: function (context) {
+        axios.post("/api/wishlists", {wishlist: context.state.wishlist, email: context.state.email})
+        .then(() => { router.push("/success") })
+        .catch(error => {
+            console.log(error.response);
+            if(error.response.data.errors.email!= undefined){
+                window.alert(error.response.data.errors.email[0])
+            }
+            if(error.response.data.errors.wishlist!= undefined){
+                window.alert(error.response.data.errors.wishlist[0])
+            }
+            console.log(error.response.data.errors);
+        })
+       }
     }
   })
 
