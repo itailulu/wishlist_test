@@ -15,15 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('{any?}', function () {
     return view('welcome');
 });
 
-Route::get("/email", function() {
-   return view("welcome");
-});
-Route::get("/success", function() {
-   return view("welcome");
-});
 
-Route::post("wishlists", [WishlistsController::class, 'store']);
+

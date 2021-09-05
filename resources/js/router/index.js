@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../Views/Home'
 import Email from '../Views/Email'
 import Success from '../Views/Success'
+import NotFound from '../Views/NotFound'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
         path: '/success',
         name: 'Success',
         component: Success
+    },
+    { 
+      path: '/:catchAll(.*)', 
+      component: NotFound,
+      name: 'NotFound'
     }
   ]
   
