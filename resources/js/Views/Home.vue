@@ -53,10 +53,11 @@
             </CCol>
             <CCol sm="6">
                 <CRow>
-                    <CCol sm="6" class="mb-0">
+                    <CCol sm="7" class="mb-0">
                         <h4>Your wishlist:</h4>
+                        <Product v-for="product in wishlist" :key="product.node.id" :product="product"></Product>
                     </CCol>
-                    <CCol sm="6">
+                    <CCol sm="5">
                         <CButton
                             color="primary"
                             variant="outline"
@@ -69,11 +70,6 @@
                             class="m-2 sm"
                             @click="clearWishlist()"
                         >Remove all</CButton>
-                    </CCol>
-                </CRow>
-                <CRow>
-                    <CCol sm=7>
-                        <Product v-for="product in wishlist" :key="product.node.id" :product="product"></Product>
                     </CCol>
                 </CRow>
             </CCol>
