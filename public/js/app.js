@@ -21115,10 +21115,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -40012,13 +40008,25 @@ var render = function() {
               _c(
                 "CRow",
                 [
-                  _c("CCol", { staticClass: "mb-0", attrs: { sm: "6" } }, [
-                    _c("h4", [_vm._v("Your wishlist:")])
-                  ]),
+                  _c(
+                    "CCol",
+                    { staticClass: "mb-0", attrs: { sm: "7" } },
+                    [
+                      _c("h4", [_vm._v("Your wishlist:")]),
+                      _vm._v(" "),
+                      _vm._l(_vm.wishlist, function(product) {
+                        return _c("Product", {
+                          key: product.node.id,
+                          attrs: { product: product }
+                        })
+                      })
+                    ],
+                    2
+                  ),
                   _vm._v(" "),
                   _c(
                     "CCol",
-                    { attrs: { sm: "6" } },
+                    { attrs: { sm: "5" } },
                     [
                       _c(
                         "CButton",
@@ -40048,24 +40056,6 @@ var render = function() {
                         [_vm._v("Remove all")]
                       )
                     ],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "CRow",
-                [
-                  _c(
-                    "CCol",
-                    { attrs: { sm: "7" } },
-                    _vm._l(_vm.wishlist, function(product) {
-                      return _c("Product", {
-                        key: product.node.id,
-                        attrs: { product: product }
-                      })
-                    }),
                     1
                   )
                 ],
