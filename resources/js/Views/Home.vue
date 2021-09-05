@@ -63,6 +63,12 @@
                             class="m-2"
                             @click="sendEmail()"
                         >Send Wishlist to a friend</CButton>
+                        <CButton
+                            color="secondary"
+                            variant="outline"
+                            class="m-2 sm"
+                            @click="clearWishlist()"
+                        >Remove all</CButton>
                     </CCol>
                 </CRow>
                 <CRow>
@@ -103,6 +109,11 @@ export default {
             let filters = this.getFilters();
             console.log("filters:", filters);
             this.$store.dispatch("getProducts", filters)
+        },
+        clearWishlist(){
+            if( window.confirm("Are you sure you want to REMOVE ALL ITEMS from your wishlist?") ){
+                this.$store.commit("clearWishlist")
+            }
         },
         sendEmail(){
             this.$router.push("/email")

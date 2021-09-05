@@ -46,6 +46,10 @@ export default new Vuex.Store({
             if(index !== -1){
                 state.wishlist.splice(index,1)
             }
+        },
+
+        clearWishlist: function (state){
+            state.wishlist = [];
         }
     },
     actions: {
