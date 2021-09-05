@@ -16,7 +16,7 @@ class CreateWishlistsTable extends Migration
         Schema::create('wishlists', function (Blueprint $table) {
             $table->id();
             $table->json("wishlist");
-            $table->string("email", 255);
+            $table->string("email", 255); // you limited to 255, but there's no validation for that on the controller
             $table->boolean("sent")->default(false);
             $table->timestamps();
         });

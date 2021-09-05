@@ -25,7 +25,11 @@ class WishlistsController extends Controller
         if($wishlist){
             event(new WishlistCreated($wishlist));
             return response()->json(["message" => "Wishlist successfuly sent"],200);
-        }else{
+        }else{ 
+        /**
+         *  probably will never get to here, as errors in Wishlist::create will throw an exception and you will not even get here.
+         * You can confirm by sending and email with length > 255 - you'll get 500 with SQL error, not from the following return statement
+         */
             return response()->json(["message" => "something went wrong"],500);
         }
         

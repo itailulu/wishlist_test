@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace App\Providers; // is this the best place to put an event?
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;

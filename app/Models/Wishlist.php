@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Wishlist extends Model
 {
-    use HasFactory;
+    use HasFactory; // minor, but it doesn't have a factory...
 
     protected $guarded = [];
 
