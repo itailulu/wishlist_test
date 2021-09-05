@@ -21113,6 +21113,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -21139,6 +21145,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var filters = this.getFilters();
       console.log("filters:", filters);
       this.$store.dispatch("getProducts", filters);
+    },
+    clearWishlist: function clearWishlist() {
+      if (window.confirm("Are you sure you want to REMOVE ALL ITEMS from your wishlist?")) {
+        this.$store.commit("clearWishlist");
+      }
     },
     sendEmail: function sendEmail() {
       this.$router.push("/email"); // axios.post("/wishlists", {wishlist: this.$store.state.wishlist, email: "email@example.com"})
@@ -21235,7 +21246,14 @@ var app = new vue__WEBPACK_IMPORTED_MODULE_4__.default({
   },
   el: "#app",
   router: _router__WEBPACK_IMPORTED_MODULE_1__.default,
+  beforeCreate: function beforeCreate() {
+    this.$store.commit('initialiseStore');
+  },
   store: _store__WEBPACK_IMPORTED_MODULE_2__.default
+});
+_store__WEBPACK_IMPORTED_MODULE_2__.default.subscribe(function (mutation, state) {
+  // Store the state object as a JSON string
+  localStorage.setItem('users_wishlist', JSON.stringify(state.wishlist));
 });
 
 /***/ }),
@@ -21348,6 +21366,11 @@ vue__WEBPACK_IMPORTED_MODULE_1__.default.use(vuex__WEBPACK_IMPORTED_MODULE_2__.d
   },
   getters: {},
   mutations: {
+    initialiseStore: function initialiseStore(state) {
+      if (localStorage.getItem("users_wishlist")) {
+        state.wishlist = JSON.parse(localStorage.getItem("users_wishlist"));
+      }
+    },
     email: function email(state, _email) {
       state.email = _email;
     },
@@ -21375,6 +21398,9 @@ vue__WEBPACK_IMPORTED_MODULE_1__.default.use(vuex__WEBPACK_IMPORTED_MODULE_2__.d
       if (index !== -1) {
         state.wishlist.splice(index, 1);
       }
+    },
+    clearWishlist: function clearWishlist(state) {
+      state.wishlist = [];
     }
   },
   actions: {
@@ -40006,6 +40032,20 @@ var render = function() {
                           }
                         },
                         [_vm._v("Send Wishlist to a friend")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "CButton",
+                        {
+                          staticClass: "m-2 sm",
+                          attrs: { color: "secondary", variant: "outline" },
+                          on: {
+                            click: function($event) {
+                              return _vm.clearWishlist()
+                            }
+                          }
+                        },
+                        [_vm._v("Remove all")]
                       )
                     ],
                     1
