@@ -14,6 +14,11 @@ export default new Vuex.Store({
 
     },
     mutations: {
+        initialiseStore: function(state){
+            if(localStorage.getItem("users_wishlist")){
+                state.wishlist = JSON.parse(localStorage.getItem("users_wishlist"));
+            }
+        },
         email: function (state, email){
             state.email = email;
         },

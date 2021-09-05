@@ -13,5 +13,11 @@ const app = new Vue({
     },
     el: "#app",
     router,
+    beforeCreate() { this.$store.commit('initialiseStore')},
     store 
 })
+
+store.subscribe((mutation, state) => {
+    // Store the state object as a JSON string
+    localStorage.setItem('users_wishlist', JSON.stringify(state.wishlist));
+});
